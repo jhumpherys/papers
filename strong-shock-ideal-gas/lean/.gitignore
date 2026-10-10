@@ -1,0 +1,4 @@
+/.lake/
+*.olean
+axioms.txt
+__pycache__/

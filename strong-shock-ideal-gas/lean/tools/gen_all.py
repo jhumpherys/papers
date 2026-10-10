@@ -1,0 +1,95 @@
+# Generates StrongShock/Bernstein/*.lean (exact Bernstein-basis expansions proving polynomial
+# nonnegativity on boxes) and StrongShock/Bridge/*.lean (identities linking each polynomial to the
+# energy coefficients defined in StrongShock/Basic.lean), together with StrongShock/BernsteinBounds.lean.
+# Usage: SS_ROOT=<output project dir> python3 gen_all.py
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ROOT=os.environ.get("SS_ROOT",os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from gen_lean import *
+from lp import Poly, g as G_, n as N_, s as S_, z as Z_, th, G, P1,P2,R,C
+def divs(q):
+    d={}
+    for k,v in q.d.items():
+        kk=list(k); kk[5]-=1; d[tuple(kk)]=v
+    return Poly(d)
+F23=Fr(2,3);F25=Fr(2,5)
+qq=(1-Z_)*G
+calA=((G_+2)*(N_+1)*Z_*Z_)/4 - Z_ + (G_+2)*(N_-1)*(2-G_)*Z_*qq/8 + (G_+2)*(N_-1)*G_*G_*qq*qq*(Poly.var('N'))/8
+calB=G_*Z_/2 + (G_+2)*(G_+2)*(1-Z_)*G/8*((3*N_-1)*Z_*Z_ - 2*(N_+1-Poly.var('N'))*Z_ + 2*(1-Poly.var('N')))
+# (name, LaurentQ, gbox, lean_expr(with n z), times_s)
+strip=[
+ ('T1', N_*th-(N_-1)**2*(1-Z_)**2*G*G,(Fr(0),F23),"n * θ g - (n - 1) ^ 2 * (1 - z) ^ 2 / g ^ 2",False),
+ ('Rup',1-divs(R),(Fr(0),F23),"s - Rc g n s z",True),
+ ('Rlo',1+divs(R),(Fr(0),F23),"s + Rc g n s z",True),
+ ('Alo',calA,(Fr(0),F23),"calA g n z",False),
+ ('Aup',Fr(1,3)-calA,(Fr(0),F23),"1 / 3 - calA g n z",False),
+ ('Blo',calB+Fr(1,6),(Fr(0),F23),"calB g n z + 1 / 6",False),
+ ('Bup',Fr(1,5)-calB,(Fr(0),F23),"1 / 5 - calB g n z",False),
+ ('P1lo',divs(P1)-Fr(3,32),(Fr(0),F25),"P1c g n s z - 3 / 32 * s",True),
+ ('P1hi',divs(P1)-Fr(3,50),(F25,F23),"P1c g n s z - 3 / 50 * s",True),
+ ('P2lo',divs(P2)-Fr(1,2),(Fr(0),F25),"P2c g n s z - 1 / 2 * s",True),
+ ('P2hi',divs(P2)-Fr(3,4),(F25,F23),"P2c g n s z - 3 / 4 * s",True),
+]
+line=[
+ ('LT1', 4*N_*th-6*(N_-1)**2*(1-Z_)**2*G*G,"4 * n * θ g - 6 * (n - 1) ^ 2 * (1 - z) ^ 2 / g ^ 2",False),
+ ('LP1',divs(P1)-Fr(1,24),"P1c g n s z - 1 / 24 * s",True),
+ ('LP2',divs(P2)-Fr(1,2),"P2c g n s z - 1 / 2 * s",True),
+ ('LRup',1-divs(R),"s - Rc g n s z",True),('LRlo',1+divs(R),"s + Rc g n s z",True),
+ ('LCnn',divs(C),"Cc g n s z",True),('LCup',Fr(1,6)-divs(C),"1 / 6 * s - Cc g n s z",True),
+]
+bern_items=[];bridge_items=[]
+def den_str(den,line=False):
+    t="(1 + g * (1 + (k - 1) * τ))" if not line else "(1 + g)"
+    nn="(1 + g * k)" if not line else "(1 + g)"
+    parts=[]
+    if den['g']: parts.append(f"g ^ {den['g']}")
+    if den['gp2']: parts.append(f"(g + 2) ^ {den['gp2']}")
+    if den['n']: parts.append(f"{nn} ^ {den['n']}")
+    if den['zden']: parts.append(f"{t} ^ {den['zden']}")
+    return " * ".join(parts) if parts else "1"
+for nm,Q,gb,ex,ts in strip:
+    num,den=to_box(Q)
+    box=[gb,(Fr(1,2),Fr(3,2)),(Fr(0),Fr(1)),(Fr(0),Fr(1))]
+    tree=solve_tree(num,box)
+    bern_items.append((nm,gen(f"bern_{nm}",num,tree)))
+    rhs=("s * " if ts else "")+f"({poly_str(num)})"
+    bridge_items.append((nm,f"""lemma bridge_{nm} (g k τ s : ℝ) (hg : 0 < g) (hn : 0 < 1 + g * k) (ht : 0 < 1 + g * (1 + (k - 1) * τ)) :
+    (let n := 1 + g * k; let z := 1 / (1 + g * (1 + (k - 1) * τ)); {ex}) * ({den_str(den)}) =
+      {rhs} := by
+  simp only [calA, calB, Rc, Cc, P1c, P2c, Kc, K1c, Bc, Lc, c2S, c1S_s, c1S_z, c1S, d1S, V1S, V2S, cS, dS, Vs, As,
+    fS, fZ, f0, f1, θ]
+  field_simp
+  ring
+"""))
+for nm,Q,ex,ts in line:
+    num,den=to_box(Q)
+    num=num.subs(1,MP(BV).c(1))
+    box=[(Fr(0),Fr(1)),(Fr(1),Fr(1)),(Fr(0),Fr(1)),(Fr(0),Fr(1))]
+    tree=solve_tree(num,box)
+    bern_items.append((nm,gen(f"bern_{nm}",num,tree)))
+    rhs=("s * " if ts else "")+f"({poly_str(num)})"
+    bridge_items.append((nm,f"""lemma bridge_{nm} (g s : ℝ) (hg : 0 < g) :
+    (let n := 1 + g; let z := 1 / (1 + g); {ex}) * ({den_str(den,True)}) =
+      {rhs} := by
+  simp only [calA, calB, Rc, Cc, P1c, P2c, Kc, K1c, Bc, Lc, c2S, c1S_s, c1S_z, c1S, d1S, V1S, V2S, cS, dS, Vs, As,
+    fS, fZ, f0, f1, θ]
+  field_simp
+  ring
+"""))
+os.makedirs(ROOT+'/StrongShock/Bernstein',exist_ok=True)
+os.makedirs(ROOT+'/StrongShock/Bridge',exist_ok=True)
+for f in os.listdir(ROOT+'/StrongShock/Bernstein'): os.remove(ROOT+'/StrongShock/Bernstein/'+f)
+for f in os.listdir(ROOT+'/StrongShock/Bridge'): os.remove(ROOT+'/StrongShock/Bridge/'+f)
+hdr_c=["import StrongShock.Basic","","namespace StrongShock","","set_option maxHeartbeats 4000000","set_option maxRecDepth 100000","set_option linter.unusedVariables false",""]
+hdr_b=["import StrongShock.Basic","","namespace StrongShock","","set_option maxHeartbeats 4000000","set_option linter.unusedSimpArgs false","set_option maxRecDepth 100000",""]
+names=[]
+for nm,txt in bern_items:
+    open(f'{ROOT}/StrongShock/Bernstein/{nm}.lean','w').write("\n".join(hdr_c+[txt,"","end StrongShock",""]))
+    names.append(nm)
+for nm,txt in bridge_items:
+    open(f'{ROOT}/StrongShock/Bridge/{nm}.lean','w').write("\n".join(hdr_b+[txt,"","end StrongShock",""]))
+agg=["/-! Bernstein expansions and bridge identities generated by tools/gen_all.py. -/"]
+agg+=[f"import StrongShock.Bernstein.{n}" for n in names]+[f"import StrongShock.Bridge.{n}" for n in names]
+open(ROOT+'/StrongShock/BernsteinBounds.lean','w').write("\n".join([l for l in agg if l.startswith("import")])+"\n")
+for p in [ROOT+'/StrongShock/Bridge.lean']:
+    if os.path.exists(p): os.remove(p)

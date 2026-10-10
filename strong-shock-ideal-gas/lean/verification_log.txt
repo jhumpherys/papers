@@ -1,0 +1,82 @@
+StrongShock Lean formalization: verification log
+Date (UTC): 2026-10-09 23:50
+Lean: Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+Mathlib commit: d13f23b723b8a846827a245b89c10fc7d3f11612 (tag v4.34.1)
+Machine: 2 cores, 7 GB RAM
+
+== lake build (warnings omitted) ==
+✔ [2164/2215] Built StrongShock.Basic (2.0s)
+✔ [2166/2215] Built StrongShock.Finite (2.6s)
+✔ [2167/2215] Built StrongShock.Bridge.LCup (3.2s)
+✔ [2168/2215] Built StrongShock.Bridge.LCnn (2.8s)
+✔ [2169/2215] Built StrongShock.Bridge.LRlo (2.1s)
+✔ [2170/2215] Built StrongShock.Bridge.LRup (2.1s)
+✔ [2171/2215] Built StrongShock.Bridge.LP2 (1.7s)
+✔ [2172/2215] Built StrongShock.Bridge.LP1 (2.0s)
+⚠ [2173/2215] Built StrongShock.Bridge.LT1 (1.6s)
+✔ [2174/2215] Built StrongShock.Bridge.P2hi (3.7s)
+✔ [2175/2215] Built StrongShock.Bridge.P2lo (3.7s)
+✔ [2176/2215] Built StrongShock.Bridge.P1hi (3.8s)
+✔ [2177/2215] Built StrongShock.Bridge.P1lo (4.2s)
+⚠ [2178/2215] Built StrongShock.Bridge.Bup (4.9s)
+⚠ [2179/2215] Built StrongShock.Bridge.Blo (5.2s)
+⚠ [2180/2215] Built StrongShock.Bridge.Aup (2.9s)
+⚠ [2181/2215] Built StrongShock.Bridge.Alo (2.5s)
+✔ [2182/2215] Built StrongShock.Bridge.Rlo (4.6s)
+✔ [2183/2215] Built StrongShock.Bridge.Rup (4.7s)
+⚠ [2184/2215] Built StrongShock.Bridge.T1 (2.8s)
+✔ [2185/2215] Built StrongShock.Bernstein.LCup (3.4s)
+✔ [2186/2215] Built StrongShock.Bernstein.LCnn (2.2s)
+✔ [2187/2215] Built StrongShock.Bernstein.LRlo (1.9s)
+✔ [2188/2215] Built StrongShock.Bernstein.LRup (1.9s)
+✔ [2189/2215] Built StrongShock.Bernstein.LP2 (2.1s)
+✔ [2190/2215] Built StrongShock.Bernstein.LP1 (2.0s)
+✔ [2191/2215] Built StrongShock.Bernstein.LT1 (1.6s)
+✔ [2192/2215] Built StrongShock.Bernstein.P2lo (25s)
+✔ [2193/2215] Built StrongShock.Bernstein.P2hi (46s)
+✔ [2194/2215] Built StrongShock.Bernstein.P1hi (46s)
+✔ [2195/2215] Built StrongShock.Bernstein.P1lo (30s)
+✔ [2196/2215] Built StrongShock.Bernstein.Bup (29s)
+✔ [2197/2215] Built StrongShock.Bernstein.Blo (27s)
+✔ [2198/2215] Built StrongShock.Bernstein.Aup (10s)
+✔ [2199/2215] Built StrongShock.Bernstein.Alo (8.6s)
+✔ [2200/2215] Built StrongShock.Bernstein.Rlo (26s)
+✔ [2201/2215] Built StrongShock.Bernstein.Rup (25s)
+✔ [2203/2215] Built StrongShock.Bernstein.T1 (12s)
+✔ [2205/2215] Built StrongShock.BernsteinBounds (1.2s)
+✔ [2206/2215] Built StrongShock.EnergyIdentity (15s)
+⚠ [2207/2215] Built StrongShock.Profile (23s)
+⚠ [2208/2215] Built StrongShock.Becker (5.6s)
+⚠ [2209/2215] Built StrongShock.Exclusion (14s)
+⚠ [2210/2215] Built StrongShock.Bounds (48s)
+⚠ [2211/2215] Built StrongShock.ZeroFrequency (9.0s)
+⚠ [2212/2215] Built StrongShock.Decay (9.6s)
+⚠ [2213/2215] Built StrongShock.Main (3.4s)
+✔ [2214/2215] Built StrongShock (1.7s)
+Build completed successfully (2215 jobs).
+lake build exit status: 0, elapsed 256 s
+
+== search for sorry, admit, axiom in the sources ==
+occurrences: 0
+
+== lake env lean Check.lean ==
+'StrongShock.energy_identity_jet' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thermal_cancel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.line_coercive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.strip_coercive' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.SZTraj.slope_interval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.exclusion' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.flux_tendsto' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.zero_frequency' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_line_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_line_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_transport_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_transport_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.cor_transport_finite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_near_line_finite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.evans_transport' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.evans_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.cor_transport_finite'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.thm_near_line_finite'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'StrongShock.becker' depends on axioms: [propext, Classical.choice, Quot.sound]
+exit status: 0
