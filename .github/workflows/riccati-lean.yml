@@ -13,6 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Generates lake-manifest.json on the first run, before it is committed.
+      - name: Generate lake-manifest.json if missing
+        working-directory: riccati-stability/lean
+        run: |
+          if [ ! -f lake-manifest.json ]; then
+            curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+            "$HOME/.elan/bin/lake" update
+          fi
+
       - uses: leanprover/lean-action@v1
         with:
           lake-package-directory: riccati-stability/lean
