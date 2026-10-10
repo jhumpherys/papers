@@ -2,7 +2,7 @@
 
 Jeffrey Humpherys
 
-* Lean formalization: [`lean/`](lean)
+* Lean formalization: [`lean/`](lean), archived at [doi:10.5281/zenodo.23288169](https://doi.org/10.5281/zenodo.23288169)
 
 [![Lean build](https://github.com/jhumpherys/papers/actions/workflows/strong-shock-lean.yml/badge.svg)](https://github.com/jhumpherys/papers/actions/workflows/strong-shock-lean.yml)
 
