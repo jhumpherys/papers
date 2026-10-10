@@ -1,0 +1,10 @@
+name = "RiccatiStabilityLean"
+defaultTargets = ["RiccatiStability"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "321b3b85cb86b65144d78546020d53650b0d9071"
+
+[[lean_lib]]
+name = "RiccatiStability"

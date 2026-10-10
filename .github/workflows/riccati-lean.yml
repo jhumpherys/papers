@@ -1,0 +1,36 @@
+name: Riccati Lean build
+
+on:
+  push:
+    paths: ['riccati-stability/lean/**', '.github/workflows/riccati-lean.yml']
+  pull_request:
+    paths: ['riccati-stability/lean/**', '.github/workflows/riccati-lean.yml']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: riccati-stability/lean
+
+      - name: Check axioms
+        working-directory: riccati-stability/lean
+        run: |
+          lake env lean AxiomCheck.lean | tee axioms.txt
+          test "$(grep -c 'depends on axioms' axioms.txt)" -eq "$(grep -c '^#print axioms' AxiomCheck.lean)"
+          if grep -q sorryAx axioms.txt; then
+            echo "A result depends on sorryAx"; exit 1
+          fi
+          if grep -v 'depends on axioms: \[propext, Classical.choice, Quot.sound\]' axioms.txt | grep -q 'depends on axioms'; then
+            echo "A result uses a nonstandard axiom"; exit 1
+          fi
+
+      - name: Upload lake-manifest.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: lake-manifest
+          path: riccati-stability/lean/lake-manifest.json
