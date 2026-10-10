@@ -3,7 +3,8 @@
 Supplementary material for the manuscript *Spectral stability for strong ideal-gas shock layers*.
 Section 11 of the manuscript describes the formalization. Numbers below refer to the manuscript.
 
-The formalization depends only on the Lean 4 core and Mathlib.
+The formalization depends only on the Lean 4 core and Mathlib. It is archived at Zenodo,
+[doi:10.5281/zenodo.23288169](https://doi.org/10.5281/zenodo.23288169).
 
 * Lean toolchain `leanprover/lean4:v4.34.1` (file `lean-toolchain`)
 * Mathlib `v4.34.1`, commit `d13f23b723b8a846827a245b89c10fc7d3f11612` (files `lakefile.toml`, `lake-manifest.json`)
