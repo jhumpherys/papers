@@ -1,5 +1,5 @@
 /-
-  Zero frequency (Section 9, Proposition 9.1).
+  Zero frequency (Section 8, Proposition 8.1).
 -/
 import StrongShock.Exclusion
 
@@ -173,7 +173,7 @@ structure ZeroAdmissible {g n : ℝ} {T : SZTraj g n} (S : EigenSol T 0) : Prop 
     Tendsto S.u atTop (𝓝 (α * r1 g 1 + β * r2 g 1)) ∧
     Tendsto S.ε atTop (𝓝 (α * r1 g 2 + β * r2 g 2))
 
-/-- The downstream-decaying solutions of the variational equation (9.1) are multiples of
+/-- The downstream-decaying solutions of the variational equation (8.1) are multiples of
     the profile tangent (the downstream rest point is a saddle). -/
 def VariationalUnique {g n : ℝ} (T : SZTraj g n) : Prop :=
   ∀ (Z1 Z2 Z1p Z2p : ℝ → ℂ), (∀ x, HasDerivAt Z1 (Z1p x) x) → (∀ x, HasDerivAt Z2 (Z2p x) x) →
@@ -183,7 +183,7 @@ def VariationalUnique {g n : ℝ} (T : SZTraj g n) : Prop :=
     Tendsto Z1 atTop (𝓝 0) → Tendsto Z2 atTop (𝓝 0) →
     ∃ A0 : ℂ, ∀ x, Z1 x = A0 * (V1S g (T.s x) (T.z x) : ℂ) ∧ Z2 x = A0 * (e1S g n (T.s x) (T.z x) : ℂ)
 
-/-- **Proposition 9.1.** No nontrivial admissible solution at zero frequency. -/
+/-- **Proposition 8.1.** No nontrivial admissible solution at zero frequency. -/
 theorem zero_frequency {g n : ℝ} (hg : 0 < g) (hn : 0 < n) (T : SZTraj g n)
     (hs_bot : Tendsto T.s atBot (𝓝 1)) (hs_top : Tendsto T.s atTop (𝓝 0))
     (hzb : ∃ B, ∀ x, |T.z x| ≤ B)

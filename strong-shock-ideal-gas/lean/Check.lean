@@ -2,22 +2,28 @@ import StrongShock
 
 open StrongShock
 
-#print axioms StrongShock.energy_identity_jet
 #print axioms StrongShock.thermal_cancel
-#print axioms StrongShock.line_coercive
-#print axioms StrongShock.strip_coercive
+#print axioms StrongShock.energy_identity_weighted
 #print axioms StrongShock.SZTraj.slope_interval
-#print axioms StrongShock.exclusion
-#print axioms StrongShock.flux_tendsto
+#print axioms StrongShock.SZTraj.sharp_above
+#print axioms StrongShock.SZTraj.sharp_below
+#print axioms StrongShock.SZTraj.z_bot_above
+#print axioms StrongShock.SZTraj.z_bot_below
+#print axioms StrongShock.SZTraj.one_sub_z_lower
+#print axioms StrongShock.Tcal_bounds
+#print axioms StrongShock.lower_coercive
+#print axioms StrongShock.var_decomp
+#print axioms StrongShock.var_coercive
+#print axioms StrongShock.PiP_strip
+#print axioms StrongShock.PiP_mono
+#print axioms StrongShock.rhoE_spec
+#print axioms StrongShock.endpoint
+#print axioms StrongShock.fluxW_tendsto
+#print axioms StrongShock.exclusionW
 #print axioms StrongShock.zero_frequency
-#print axioms StrongShock.thm_line_nonzero
-#print axioms StrongShock.thm_line_zero
-#print axioms StrongShock.thm_transport_nonzero
-#print axioms StrongShock.thm_transport_zero
-#print axioms StrongShock.cor_transport_finite
-#print axioms StrongShock.thm_near_line_finite
-#print axioms StrongShock.evans_transport
-#print axioms StrongShock.evans_line
-#print axioms StrongShock.cor_transport_finite'
-#print axioms StrongShock.thm_near_line_finite'
+#print axioms StrongShock.thm_nonzero
+#print axioms StrongShock.zero_core
+#print axioms StrongShock.evans_R
+#print axioms StrongShock.cor_finite
+#print axioms StrongShock.monatomic_in_R
 #print axioms StrongShock.becker

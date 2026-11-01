@@ -8,3 +8,12 @@ rev = "v4.34.1"
 
 [[lean_lib]]
 name = "StrongShock"
+
+# Style linters are switched off so that the build log shows only real problems.
+# They concern unused simp arguments, redundant `try` tactics, and unused
+# hypotheses, and have no bearing on what is proved.
+[leanOptions]
+linter.unusedSimpArgs = false
+linter.unusedTactic = false
+linter.unusedVariables = false
+linter.unusedSectionVars = false

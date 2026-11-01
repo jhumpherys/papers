@@ -52,23 +52,6 @@ lemma thermal_cancel {K : Type*} [Field K] (g n lam V V1 V2 a c c1 c2 e1 u up up
     field_simp
     ring
 
-/-- Flux of the energy identity (Appendix A), one real component.
-    Arguments: profile point `(s,z)`, perturbation `v, u`, and `y = (u,h)/√a`, `y'`. -/
-def Flux (g n s z v u y1 y1p y2 y2p : ℝ) : ℝ :=
-  v ^ 2 / 2 - v * u - y1p * y1 - n / θ g * y2p * y2 - Kc g n s z * y1p * y2
-    + (Vs g s - g * cS g s z - dS s z) / 2 * y1 ^ 2
-    + (Vs g s + g * cS g s z - n * dS s z) / (2 * θ g) * y2 ^ 2 + g * y1 * y2
-
-/-- Its derivative along the profile, by the product rule. -/
-def FluxDeriv (g n s z v vp u up y1 y1p y1pp y2 y2p y2pp : ℝ) : ℝ :=
-  v * vp - (vp * u + v * up) - (y1p ^ 2 + y1pp * y1) - n / θ g * (y2p ^ 2 + y2pp * y2)
-    - (K1c g n s z * y1p * y2 + Kc g n s z * y1pp * y2 + Kc g n s z * y1p * y2p)
-    + (V1S g s z - g * c1S g n s z - d1S g n s z) / 2 * y1 ^ 2
-    + (Vs g s - g * cS g s z - dS s z) * y1 * y1p
-    + (V1S g s z + g * c1S g n s z - n * d1S g n s z) / (2 * θ g) * y2 ^ 2
-    + (Vs g s + g * cS g s z - n * dS s z) / θ g * y2 * y2p
-    + g * (y1p * y2 + y1 * y2p)
-
 /-- Transformed momentum residual (4.5), one real component, with `Lu` standing for the
     corresponding component of `λ u`. -/
 def Res2 (g n s z Lu u up upp hp vp : ℝ) : ℝ :=
@@ -83,35 +66,76 @@ def ResH (g n s z Lh u up upp hp hpp : ℝ) : ℝ :=
         - (Vs g s + g * cS g s z) * c1S g n s z + n * c2S g n s z) / Vs g s * u
     - n / Vs g s * hpp - (1 - n) * cS g s z / Vs g s * upp
 
-set_option maxHeartbeats 8000000 in
+/-! ### The weighted energy identity
+
+The thermal weight is `ω = W²/2` with `W > 0` (Section 5).  The constant weight of
+Section 6.1 is `W = a_*`, the variable weight (6.9) is `W = a + 4c/3`.  We use the rescaled
+thermal variable `ξ̃ = h/(√a W) = ξ/√2`, which makes every coefficient rational. -/
+
+/-- Logarithmic rate `δ = d + ω'/ω = d + 2W'/W` of (5.6). -/
+def deltaW (s z W W1 : ℝ) : ℝ := dS s z + 2 * W1 / W
+/-- `κ = (ν-1)²c²/(4νω)` of (5.6). -/
+def kapW (g n s z W : ℝ) : ℝ := (n - 1) ^ 2 * cS g s z ^ 2 / (2 * n * W ^ 2)
+/-- The thermal potential `P` of (5.7). -/
+def PW (g n s z W W1 : ℝ) : ℝ :=
+  As g s * dS s z / 2 + Vs g s * deltaW s z W W1 / 2
+    - (n * deltaW s z W W1 - g * cS g s z) ^ 2 / (4 * n)
+/-- `√2·m`, with `m` the coupling coefficient (5.10). -/
+def mW (g n s z W W1 : ℝ) : ℝ :=
+  (g * (Tcal g n s z - W ^ 2 / 2) + (n - 1) * cS g s z * W1 / W) / W
+
+/-- The pair form `(1-κ)Φ² + 2mΦξ + Pξ²` of (5.11), written in `ξ̃ = ξ/√2`. -/
+def pairW (g n s z W W1 X Y : ℝ) : ℝ :=
+  (1 - kapW g n s z W) * X ^ 2 + 2 * mW g n s z W W1 * X * Y + 2 * PW g n s z W W1 * Y ^ 2
+
+/-- The normalized energy density (5.11), one real component, in the variables
+    `φ = u/a`, `Φ = √a φ'`, `ξ̃`, `ξ̃'`. -/
+def QW (g n s z W W1 phi Phi xi xip : ℝ) : ℝ :=
+  (1 - g / 2) * As g s * (As g s * dS s z) * phi ^ 2
+    + 2 * n * (xip + g * cS g s z * xi / (2 * n) - (n - 1) * cS g s z * Phi / (2 * n * W)) ^ 2
+    + pairW g n s z W W1 Phi xi
+
+/-- The energy flux of one real component (Appendix A, after normalization). -/
+def FluxW (g n s z W v u up h hp : ℝ) : ℝ :=
+  v ^ 2 / 2 - u * v - (up - dS s z * u) * u / As g s + g * u ^ 2 / 4 + g * u * h / As g s
+    + (Vs g s * h ^ 2 - 2 * n * h * hp
+        + 2 * (n - 1) * cS g s z * (up - dS s z * u) * h) / (As g s * W ^ 2)
+
+/-- Its derivative along the profile, by the product rule. -/
+def FluxWDeriv (g n s z W W1 v vp u up upp h hp hpp : ℝ) : ℝ :=
+  let a := As g s
+  let d := dS s z
+  let c := cS g s z
+  let p := up - d * u
+  let pp := upp - d1S g n s z * u - d * up
+  let N := Vs g s * h ^ 2 - 2 * n * h * hp + 2 * (n - 1) * c * p * h
+  let Np := -(a * d) * h ^ 2 + 2 * Vs g s * h * hp - 2 * n * (hp ^ 2 + h * hpp)
+    + 2 * (n - 1) * (c1S g n s z * p * h + c * pp * h + c * p * hp)
+  v * vp - (up * v + u * vp) - (pp * u + p * up) / a + p * u * d / a + g * u * up / 2
+    + g * (up * h + u * hp) / a - g * u * h * d / a
+    + Np / (a * W ^ 2) - deltaW s z W W1 * N / (a * W ^ 2)
+
+set_option maxHeartbeats 16000000 in
 set_option maxRecDepth 100000 in
-/-- **Pointwise energy identity (A.1)** for one real component.  Here `w = √a`,
-    `y₁ = u/w`, `y₂ = h/w`, the `y'`, `y''` are the corresponding derivatives (using
-    `w' = w d/2`), and `Lv, Lu, Lh` are the spectral-parameter terms. -/
-theorem energy_identity_jet (g n s z w : ℝ) (hg : 0 < g) (hn : 0 < n) (hw : w ≠ 0)
-    (hwa : w ^ 2 = As g s) (hV : Vs g s ≠ 0)
+/-- **Pointwise energy identity** (Appendix A together with Proposition 5.1) for one real
+    component and an arbitrary weight `ω = W²/2`.  Here `w = √a`, and `W1` is the value of
+    `W'`; no relation between `W` and the profile is assumed. -/
+theorem energy_identity_weighted (g n s z w W W1 : ℝ) (hg : 0 < g) (hn : 0 < n) (hw : w ≠ 0)
+    (hwa : w ^ 2 = As g s) (hV : Vs g s ≠ 0) (hW : W ≠ 0)
     (u up upp h hp hpp v vp Lv Lu Lh : ℝ) :
-    let d := dS s z
-    let d1 := d1S g n s z
-    let y1 := u / w
-    let y1p := (up - d * u / 2) / w
-    let y1pp := (upp - d * up - (d1 / 2 - d ^ 2 / 4) * u) / w
-    let y2 := h / w
-    let y2p := (hp - d * h / 2) / w
-    let y2pp := (hpp - d * hp - (d1 / 2 - d ^ 2 / 4) * h) / w
     (Lv + vp - up) * v + Vs g s / As g s * Res2 g n s z Lu u up upp hp vp * u
-      + Vs g s / (As g s * θ g) * ResH g n s z Lh u up upp hp hpp * h
-    = Lv * v + Vs g s / As g s * Lu * u + Vs g s / (As g s * θ g) * Lh * h
-      + Qform g n s z y1p y2p y1 y2
-      + FluxDeriv g n s z v vp u up y1 y1p y1pp y2 y2p y2pp := by
-  intro d d1 y1 y1p y1pp y2 y2p y2pp
+      + 2 * Vs g s / (As g s * W ^ 2) * ResH g n s z Lh u up upp hp hpp * h
+    = Lv * v + Vs g s / As g s * Lu * u + 2 * Vs g s / (As g s * W ^ 2) * Lh * h
+      + QW g n s z W W1 (u / As g s) (w * (up - dS s z * u) / As g s) (h / (w * W))
+          ((hp - (dS s z / 2 + W1 / W) * h) / (w * W))
+      + FluxWDeriv g n s z W W1 v vp u up upp h hp hpp := by
   have hg2 : g + 2 ≠ 0 := by linarith
   have hs : s = 1 - (g + 2) * w ^ 2 / 2 := by
     unfold As at hwa; field_simp at hwa; linarith
   have hVs : Vs g s = 1 - w ^ 2 := by rw [hs]; unfold Vs; field_simp; ring
   have h1w : 1 - w ^ 2 ≠ 0 := by rw [← hVs]; exact hV
-  simp only [d, d1, y1, y1p, y1pp, y2, y2p, y2pp, Res2, ResH, Qform, FluxDeriv, Rc, Cc, P1c, P2c,
-    Kc, K1c, Bc, Lc, c2S, c1S_s, c1S_z, c1S, d1S, V1S, V2S, θ]
+  simp only [Res2, ResH, QW, pairW, kapW, PW, mW, deltaW, Tcal, FluxWDeriv, c2S, c1S_s, c1S_z,
+    c1S, d1S, V1S, V2S]
   rw [hVs, ← hwa]
   subst hs
   unfold cS dS fS fZ f0 f1
