@@ -187,12 +187,6 @@ lemma hasDerivAt_V1 (x : ℝ) :
   refine hasDerivAt_of_eq h (fun y => by simp [V1S]) ?_
   · unfold V2S; ring
 
-lemma hasDerivAt_K (x : ℝ) :
-    HasDerivAt (fun y => Kc g n (T.s y) (T.z y)) (K1c g n (T.s x) (T.z x)) x := by
-  have h := ((T.hasDerivAt_c hg hn x).const_mul (1 - n)).div_const (θ g)
-  refine hasDerivAt_of_eq h (fun y => by simp [Kc, mul_div_assoc]) ?_
-  · simp [K1c, mul_div_assoc]
-
 lemma As_pos (x : ℝ) : 0 < As g (T.s x) := by
   unfold As; have := T.s_lt x; apply div_pos <;> linarith
 

@@ -1,5 +1,5 @@
 /-
-  Passage to sufficiently strong finite shocks (Section 10): compactness and continuity.
+  Passage to sufficiently strong finite shocks (Section 9): compactness and continuity.
 -/
 import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.Order.Compact
